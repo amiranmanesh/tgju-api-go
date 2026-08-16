@@ -123,6 +123,14 @@ a new maintainer is not left guessing:
 
 - **GitHub Pages** — Settings → Pages → Source: **GitHub Actions**. Without it the Pages
   workflow fails at `configure-pages`.
+- **Container package visibility** — a package pushed to GHCR is private on first
+  publish, whatever the repository's own visibility is, and GitHub exposes no REST
+  endpoint to change that. Once, at
+  `https://github.com/users/<owner>/packages/container/tgju-api-go/settings`, set the
+  visibility to **Public**. Until then `docker pull ghcr.io/…` fails for everyone else
+  and the repository sidebar reports no packages, even though the release workflow
+  published one.
+
 - **`WIKI_TOKEN`** — `GITHUB_TOKEN` cannot write to a wiki repository; no permission scope
   grants it, so the automatic token gets a 403. Create a fine-grained personal access
   token with **Contents: read and write** on this repository and add it as the
