@@ -21,7 +21,7 @@ jobs:
     name: Publish wiki/ to the GitHub Wiki
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       # The wiki lives at <repo>.wiki.git. Keeping its source in this
       # repository means wiki changes go through review like everything else,
