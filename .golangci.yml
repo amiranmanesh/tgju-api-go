@@ -1,0 +1,72 @@
+# golangci-lint configuration.
+#
+# The selection below is deliberately small. Every linter here catches a class
+# of bug or a real readability problem; none of them enforces a house style that
+# gofmt does not already settle. A lint run that produces noise is a lint run
+# people learn to ignore.
+#
+#   golangci-lint run
+
+version: "2"
+
+run:
+  timeout: 5m
+
+linters:
+  default: none
+  enable:
+    - errcheck      # an ignored error is a bug waiting for production
+    - govet         # the compiler's own suspicions
+    - ineffassign   # a value assigned and never read is a typo
+    - staticcheck   # correctness, simplification and deprecation
+    - unused        # dead code
+    - bodyclose     # a leaked response body leaks a connection
+    - errorlint     # %v on an error breaks errors.Is for everyone downstream
+    - copyloopvar   # loop variable capture
+    - misspell
+    - nilerr        # returning nil after checking err != nil
+    - noctx         # an HTTP request without a context cannot be cancelled
+    - unconvert
+    - usestdlibvars # http.MethodGet beats "GET"
+    - whitespace
+
+  settings:
+    errcheck:
+      # Writing to an http.ResponseWriter or to stdout is checked at the call
+      # sites where it matters; everywhere else the error has nowhere to go.
+      exclude-functions:
+        - (net/http.ResponseWriter).Write
+        - fmt.Fprintf
+        - fmt.Fprintln
+        - fmt.Fprint
+
+    staticcheck:
+      checks:
+        - all
+        # ST1000 wants a package comment in a house style; the packages here
+        # have comments, written for readers rather than for a checker.
+        - -ST1000
+
+  exclusions:
+    rules:
+      # Tests may ignore errors the production code must not, and a fixture is
+      # allowed to be long.
+      - path: _test\.go
+        linters:
+          - errcheck
+          - noctx
+
+      # The examples are written to be read, so they favour clarity over the
+      # error handling a library would insist on.
+      - path: ^examples/
+        linters:
+          - errcheck
+
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
+
+formatters:
+  enable:
+    - gofmt
+    - goimports

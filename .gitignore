@@ -1,0 +1,26 @@
+# Build output
+/bin/
+/dist/
+tgju
+!cmd/tgju/
+
+# Test and coverage artefacts
+*.out
+*.test
+coverage.html
+/internal/**/testdata/fuzz/
+
+# Editors
+.idea/
+.vscode/
+*.swp
+.DS_Store
+
+# Local environment
+.env
+.env.local
+
+# Generated for the Pages site by `make pages`; the source of truth is
+# server/openapi.yaml.
+/docs/openapi.yaml
+/_site/
