@@ -116,6 +116,25 @@ The release workflow re-runs the suite on the tagged commit, refuses to publish 
 tag, `version.go` and the changelog disagree, then builds the binaries and the multi-arch
 image and warms the module proxy.
 
+## One-time repository setup
+
+Two things cannot be configured from a file in this repository, and both are noted here so
+a new maintainer is not left guessing:
+
+- **GitHub Pages** — Settings → Pages → Source: **GitHub Actions**. Without it the Pages
+  workflow fails at `configure-pages`.
+- **`WIKI_TOKEN`** — `GITHUB_TOKEN` cannot write to a wiki repository; no permission scope
+  grants it, so the automatic token gets a 403. Create a fine-grained personal access
+  token with **Contents: read and write** on this repository and add it as the
+  `WIKI_TOKEN` secret. Without it the wiki workflow explains itself and passes, and the
+  wiki has to be published by hand:
+
+  ```bash
+  git clone git@github.com:amiranmanesh/tgju-api-go.wiki.git
+  cp wiki/*.md tgju-api-go.wiki/
+  cd tgju-api-go.wiki && git add -A && git commit -m "docs: sync the wiki" && git push
+  ```
+
 ## Code of conduct
 
 Be decent. The full text is in [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).

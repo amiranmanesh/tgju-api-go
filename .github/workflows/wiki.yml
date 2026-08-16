@@ -28,17 +28,41 @@ jobs:
       # instead of being edited in a browser with no history anybody reads.
       - name: Push the pages
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          WIKI_REPO: https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.wiki.git
+          # GITHUB_TOKEN cannot write here. The wiki is a separate repository
+          # and no `permissions:` scope grants access to it, so the automatic
+          # token gets a 403 no matter what this workflow asks for. A personal
+          # access token with Contents: write on this repository, stored as the
+          # WIKI_TOKEN secret, is the only way to automate the sync.
+          #
+          # Without the secret the job explains itself and passes: a fork, or a
+          # repository whose owner would rather sync by hand, should not have a
+          # permanently red workflow.
+          WIKI_TOKEN: ${{ secrets.WIKI_TOKEN }}
+          REPOSITORY: ${{ github.repository }}
           COMMIT_SHA: ${{ github.sha }}
         run: |
           set -euo pipefail
 
-          git clone --depth 1 "$WIKI_REPO" wiki-repo 2>/dev/null || {
-            echo "The wiki has never been initialised."
-            echo "Create the first page once in the GitHub UI, then re-run this workflow."
+          if [ -z "${WIKI_TOKEN}" ]; then
+            echo "::warning title=Wiki not synced::WIKI_TOKEN is not set, so wiki/ was not published."
+            echo
+            echo "GITHUB_TOKEN cannot write to a wiki repository. To enable this job:"
+            echo "  1. Create a fine-grained personal access token with"
+            echo "     Contents: read and write on ${REPOSITORY}."
+            echo "  2. Add it as the repository secret WIKI_TOKEN."
+            echo
+            echo "Until then, publish by hand:"
+            echo "  git clone git@github.com:${REPOSITORY}.wiki.git"
+            echo "  cp wiki/*.md <clone>/ && cd <clone> && git add -A && git commit && git push"
             exit 0
-          }
+          fi
+
+          if ! git clone --depth 1 \
+              "https://x-access-token:${WIKI_TOKEN}@github.com/${REPOSITORY}.wiki.git" wiki-repo 2>/dev/null; then
+            echo "::warning title=Wiki not initialised::The wiki has no pages yet."
+            echo "Enable the wiki and create one page in the GitHub UI, then re-run this workflow."
+            exit 0
+          fi
 
           # Replace the published pages wholesale: wiki/ in this repository is
           # the only source of truth.
@@ -48,12 +72,13 @@ jobs:
           cd wiki-repo
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
 
-          if git diff --quiet && git diff --cached --quiet && [ -z "$(git status --porcelain)" ]; then
+          if git diff --cached --quiet; then
             echo "the wiki is already up to date"
             exit 0
           fi
 
-          git add -A
           git commit -m "docs: sync the wiki from ${COMMIT_SHA:0:7}"
           git push
+          echo "published $(ls *.md | wc -l | tr -d ' ') pages"
