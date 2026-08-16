@@ -1,8 +1,8 @@
-# Build output
+# Build output. The binary pattern is anchored: unanchored, "tgju" would also
+# match the cmd/tgju directory.
 /bin/
 /dist/
-tgju
-!cmd/tgju/
+/tgju
 
 # Test and coverage artefacts
 *.out
