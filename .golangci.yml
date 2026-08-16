@@ -49,12 +49,14 @@ linters:
 
   exclusions:
     rules:
-      # Tests may ignore errors the production code must not, and a fixture is
-      # allowed to be long.
+      # Tests may ignore errors the production code must not. bodyclose cannot
+      # see through a helper that returns the response and closes it from
+      # t.Cleanup, which is how every request in the server suite is made.
       - path: _test\.go
         linters:
           - errcheck
           - noctx
+          - bodyclose
 
       # The examples are written to be read, so they favour clarity over the
       # error handling a library would insist on.

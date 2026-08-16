@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/rand"
 	"encoding/hex"
+	"errors"
 	"log/slog"
 	"net"
 	"net/http"
@@ -81,8 +82,10 @@ func recoverer(logger *slog.Logger) middleware {
 				if rec == nil {
 					return
 				}
-				// A client that hung up mid-response is not a bug worth a stack.
-				if rec == http.ErrAbortHandler {
+				// A client that hung up mid-response is not a bug worth a
+				// stack, and the panic has to keep travelling: the server
+				// itself is what interprets it.
+				if err, ok := rec.(error); ok && errors.Is(err, http.ErrAbortHandler) {
 					panic(rec)
 				}
 				logger.ErrorContext(r.Context(), "server: handler panicked",
