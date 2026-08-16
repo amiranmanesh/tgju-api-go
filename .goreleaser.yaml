@@ -1,0 +1,104 @@
+# GoReleaser builds the binaries attached to a GitHub release.
+#
+#   git tag -a v1.0.0 -m "..." && git push origin v1.0.0
+#
+# The container image is built separately, by the release workflow, so that the
+# same buildx invocation produces the multi-architecture manifest.
+#
+#   goreleaser check     validate this file
+#   goreleaser release --snapshot --clean    build without publishing
+
+version: 2
+
+project_name: tgju
+
+before:
+  hooks:
+    - go mod tidy
+    - go test ./...
+
+builds:
+  - id: tgju
+    main: ./cmd/tgju
+    binary: tgju
+    env:
+      - CGO_ENABLED=0
+      # Build with exactly the toolchain go.mod asks for.
+      - GOTOOLCHAIN=local
+    flags:
+      - -trimpath
+    ldflags:
+      - -s -w -X main.buildVersion={{ .Version }}
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ignore:
+      # Nobody runs a 32 bit Windows scraper in 2026.
+      - goos: windows
+        goarch: arm64
+
+archives:
+  - id: default
+    formats: [tar.gz]
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+    name_template: >-
+      {{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}
+    files:
+      - README.md
+      - LICENSE
+      - CHANGELOG.md
+
+checksum:
+  name_template: checksums.txt
+
+snapshot:
+  version_template: "{{ incpatch .Version }}-next"
+
+changelog:
+  # The hand written CHANGELOG.md is the record; this section only groups the
+  # commits since the previous tag, for the release page.
+  use: github
+  sort: asc
+  groups:
+    - title: Features
+      regexp: '^feat(\(.+\))?!?:'
+      order: 0
+    - title: Fixes
+      regexp: '^fix(\(.+\))?!?:'
+      order: 1
+    - title: Documentation
+      regexp: '^docs(\(.+\))?!?:'
+      order: 2
+    - title: Other
+      order: 99
+  filters:
+    exclude:
+      - '^test(\(.+\))?:'
+      - '^chore(\(.+\))?:'
+      - '^ci(\(.+\))?:'
+      - Merge pull request
+      - Merge branch
+
+release:
+  draft: false
+  prerelease: auto
+  footer: |
+    ## Container image
+
+    ```
+    docker pull ghcr.io/amiranmanesh/tgju-api-go:{{ .Tag }}
+    ```
+
+    ## Go module
+
+    ```
+    go get github.com/amiranmanesh/tgju-api-go@{{ .Tag }}
+    ```
+
+    Full documentation: https://amiranmanesh.github.io/tgju-api-go/
