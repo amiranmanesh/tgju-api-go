@@ -7,7 +7,11 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-Nothing yet.
+### Changed
+
+- Updated GitHub Actions versions for checkout, Go setup and GitHub Pages publishing.
+- Documented the one-time GHCR package visibility step required after the first
+  container release.
 
 ## [1.0.1] — 2026-08-16
 
