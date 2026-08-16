@@ -1,0 +1,56 @@
+name: tgju changed its markup
+description: Parsing broke, or a board returns fewer rows than the site shows.
+labels: ["upstream", "bug"]
+title: "scraper: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This is the failure mode a scraper is built to expect. Everything below
+        exists to make the fix a single, testable commit.
+
+  - type: dropdown
+    id: market
+    attributes:
+      label: Which board
+      multiple: true
+      options:
+        - currency
+        - gold
+        - coin
+    validations:
+      required: true
+
+  - type: textarea
+    id: symptom
+    attributes:
+      label: What you see
+      description: |
+        The error, or the rows that went missing. `upstream_changed` from the API
+        and `tgju: could not parse` from the library are the usual symptoms.
+      render: shell
+    validations:
+      required: true
+
+  - type: textarea
+    id: markup
+    attributes:
+      label: The new markup
+      description: |
+        Save the page and paste the relevant table:
+
+        ```
+        curl -sL -A "Mozilla/5.0" https://www.tgju.org/gold-chart > page.html
+        ```
+
+        One `<table>` element with a couple of rows is enough, and is far more
+        useful than a description of it.
+      render: html
+    validations:
+      required: true
+
+  - type: input
+    id: when
+    attributes:
+      label: When it started
+      placeholder: 2026-08-16, or "sometime last week"

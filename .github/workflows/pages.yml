@@ -1,0 +1,67 @@
+name: Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docs/**"
+      - "server/openapi.yaml"
+      - "README.md"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# One deployment at a time, and let a run in progress finish rather than
+# publishing a half built site.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build the site
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+          check-latest: true
+
+      # The spec lives next to the code that serves it, so the published copy is
+      # generated rather than maintained by hand.
+      - name: Assemble the site
+        run: |
+          mkdir -p _site
+          cp -R docs/. _site/
+          cp server/openapi.yaml _site/openapi.yaml
+          touch _site/.nojekyll
+
+      # A broken spec on the documentation site is worse than no spec, so it is
+      # parsed before it is published.
+      - name: Check the OpenAPI document parses
+        run: |
+          go run ./internal/cmd/checkspec _site/openapi.yaml
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - id: deploy
+        uses: actions/deploy-pages@v4

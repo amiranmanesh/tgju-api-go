@@ -1,0 +1,14 @@
+blank_issues_enabled: false
+
+contact_links:
+  - name: Question about using the library
+    url: https://github.com/amiranmanesh/tgju-api-go/discussions
+    about: Ask in Discussions; issues are for bugs and proposals.
+
+  - name: Documentation
+    url: https://amiranmanesh.github.io/tgju-api-go/
+    about: The API reference, the wiki and the package documentation.
+
+  - name: Something wrong with the prices themselves
+    url: https://www.tgju.org
+    about: This project only reads tgju.org. A wrong number there will be wrong here too.

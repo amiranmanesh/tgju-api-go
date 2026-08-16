@@ -1,0 +1,36 @@
+name: Proposal
+description: A new market, a new endpoint, a new option.
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What are you trying to do that you cannot do today?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What you propose
+      description: |
+        If it touches the public API, write the signature or the endpoint you
+        would want to use. A concrete call site settles most design arguments
+        faster than a paragraph does.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: What you considered instead
+      description: Including "do nothing" — say why that is not enough.
+
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Scope
+      options:
+        - label: This can be done without adding a dependency beyond golang.org/x
+        - label: I am willing to open the pull request

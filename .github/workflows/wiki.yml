@@ -1,0 +1,59 @@
+name: Wiki
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "wiki/**"
+      - ".github/workflows/wiki.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# The wiki is a git repository of its own; two pushes at once would collide.
+concurrency:
+  group: wiki
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    name: Publish wiki/ to the GitHub Wiki
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      # The wiki lives at <repo>.wiki.git. Keeping its source in this
+      # repository means wiki changes go through review like everything else,
+      # instead of being edited in a browser with no history anybody reads.
+      - name: Push the pages
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WIKI_REPO: https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.wiki.git
+          COMMIT_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+
+          git clone --depth 1 "$WIKI_REPO" wiki-repo 2>/dev/null || {
+            echo "The wiki has never been initialised."
+            echo "Create the first page once in the GitHub UI, then re-run this workflow."
+            exit 0
+          }
+
+          # Replace the published pages wholesale: wiki/ in this repository is
+          # the only source of truth.
+          find wiki-repo -maxdepth 1 -name '*.md' -delete
+          cp wiki/*.md wiki-repo/
+
+          cd wiki-repo
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          if git diff --quiet && git diff --cached --quiet && [ -z "$(git status --porcelain)" ]; then
+            echo "the wiki is already up to date"
+            exit 0
+          fi
+
+          git add -A
+          git commit -m "docs: sync the wiki from ${COMMIT_SHA:0:7}"
+          git push
