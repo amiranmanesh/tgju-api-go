@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TGJU API</title>
+<style>
+  :root {
+    --bg: #fbfaf8;
+    --panel: #ffffff;
+    --ink: #1c1a17;
+    --muted: #6b655c;
+    --line: #e5e0d8;
+    --accent: #a8741a;
+    --accent-soft: #f6efe1;
+    --code-bg: #f4f1ec;
+    --get: #2c6e49;
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #16150f;
+      --panel: #1e1c16;
+      --ink: #ece7dd;
+      --muted: #9d968a;
+      --line: #322e25;
+      --accent: #d8a54a;
+      --accent-soft: #2a2418;
+      --code-bg: #12110c;
+      --get: #6cc08b;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    line-height: 1.6; -webkit-font-smoothing: antialiased;
+  }
+  header {
+    border-bottom: 1px solid var(--line); background: var(--panel);
+    padding: 2.5rem 1.5rem 2rem;
+  }
+  .wrap { max-width: 60rem; margin: 0 auto; }
+  h1 { margin: 0 0 .4rem; font-size: 1.9rem; letter-spacing: -.02em; }
+  h2 {
+    margin: 3rem 0 1rem; font-size: 1.15rem; letter-spacing: -.01em;
+    padding-bottom: .5rem; border-bottom: 1px solid var(--line);
+  }
+  h3 { margin: 2rem 0 .5rem; font-size: 1rem; }
+  p { margin: .6rem 0; }
+  .lede { color: var(--muted); max-width: 44rem; }
+  .badges { margin-top: 1rem; display: flex; gap: .5rem; flex-wrap: wrap; }
+  .badge {
+    font-size: .78rem; padding: .2rem .6rem; border-radius: 999px;
+    background: var(--accent-soft); color: var(--accent); border: 1px solid var(--line);
+    font-variant-numeric: tabular-nums;
+  }
+  main { padding: 0 1.5rem 5rem; }
+  table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: .92rem; }
+  th, td { text-align: left; padding: .55rem .6rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-weight: 600; color: var(--muted); font-size: .8rem; text-transform: uppercase; letter-spacing: .05em; }
+  .method {
+    font: 600 .72rem/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+    color: var(--get); border: 1px solid currentColor; border-radius: 4px;
+    padding: .25rem .4rem; display: inline-block;
+  }
+  code, pre {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: .86rem;
+  }
+  td code { color: var(--accent); }
+  pre {
+    background: var(--code-bg); border: 1px solid var(--line); border-radius: 8px;
+    padding: .9rem 1rem; overflow-x: auto; margin: .8rem 0; line-height: 1.5;
+  }
+  a { color: var(--accent); }
+  .grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); margin-top: 1rem; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 1rem 1.1rem; }
+  .card h4 { margin: 0 0 .3rem; font-size: .95rem; }
+  .card p { margin: 0; color: var(--muted); font-size: .88rem; }
+  footer { border-top: 1px solid var(--line); color: var(--muted); font-size: .85rem; padding: 1.5rem; }
+  .rtl { direction: rtl; text-align: right; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <h1>TGJU API</h1>
+    <p class="lede">
+      Live currency, gold and coin prices, scraped from tgju.org and served as JSON.
+      Every price is quoted in Iranian rial. Every endpoint is a <code>GET</code>.
+    </p>
+    <div class="badges">
+      <span class="badge">v{{.Version}}</span>
+      <span class="badge">upstream: {{.Upstream}}</span>
+      <span class="badge"><a href="/openapi.yaml">OpenAPI</a></span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <h2>Endpoints</h2>
+  <table>
+    <thead><tr><th style="width:5rem">Method</th><th style="width:20rem">Path</th><th>What it does</th></tr></thead>
+    <tbody>
+    {{range .Routes}}
+      <tr>
+        <td><span class="method">{{.Method}}</span></td>
+        <td><code>{{.Pattern}}</code></td>
+        <td>{{.Summary}}</td>
+      </tr>
+    {{end}}
+    </tbody>
+  </table>
+
+  <h2>Quick start</h2>
+<pre><code># every board this instance serves
+curl -s localhost:8080/v1/markets
+
+# the whole gold board
+curl -s localhost:8080/v1/markets/gold
+
+# one instrument, without knowing which board it lives on
+curl -s localhost:8080/v1/items/price_dollar_rl
+
+# just the two keys you care about
+curl -s 'localhost:8080/v1/markets/currency/items?keys=price_dollar_rl,price_eur'
+
+# only the silver table
+curl -s 'localhost:8080/v1/markets/gold?category=%D9%82%DB%8C%D9%85%D8%AA%20%D9%86%D9%82%D8%B1%D9%87'</code></pre>
+
+  <h2>Response shape</h2>
+  <p>An item carries the site's own rendering next to the parsed number, so you can display one and compute with the other.</p>
+<pre><code>{
+  "key": "price_dollar_rl",
+  "title": "دلار",
+  "market": "currency",
+  "category": "عنوان",
+  "price": { "text": "1,864,000", "value": 1864000 },
+  "low":   { "text": "1,860,800", "value": 1860800 },
+  "high":  { "text": "1,869,100", "value": 1869100 },
+  "change": {
+    "status": "low",
+    "percent": 0.32,
+    "amount": { "text": "6,050", "value": 6050 }
+  },
+  "time": "11:49:45",
+  "profile_url": "https://www.tgju.org/profile/price_dollar_rl"
+}</code></pre>
+  <p>
+    <code>status</code> is <code>low</code>, <code>high</code> or empty, taken from tgju's own
+    classification rather than from the sign of the number: the site renders the change unsigned.
+    <code>percent</code> and <code>change.amount</code> are always positive.
+  </p>
+
+  <h2>Query parameters</h2>
+  <table>
+    <thead><tr><th style="width:8rem">Name</th><th>Meaning</th></tr></thead>
+    <tbody>
+      <tr><td><code>category</code></td><td>Keep only the category whose title matches exactly. Titles are Persian; remember to URL-encode.</td></tr>
+      <tr><td><code>keys</code></td><td>A comma separated list of instrument keys to keep, e.g. <code>keys=geram18,geram24</code>.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Errors</h2>
+  <p>Every failure has the same body and a stable <code>code</code>.</p>
+<pre><code>{ "code": "unknown_market", "message": "no such market; see GET /v1/markets", "request_id": "9f2c1a…" }</code></pre>
+  <table>
+    <thead><tr><th style="width:14rem">Code</th><th style="width:5rem">Status</th><th>Meaning</th></tr></thead>
+    <tbody>
+      <tr><td><code>unknown_market</code></td><td>404</td><td>The market in the path is not one this service serves.</td></tr>
+      <tr><td><code>not_found</code></td><td>404</td><td>No instrument with that key, or no such endpoint.</td></tr>
+      <tr><td><code>upstream_unavailable</code></td><td>502</td><td>tgju.org could not be reached. Worth retrying.</td></tr>
+      <tr><td><code>upstream_changed</code></td><td>502</td><td>tgju.org answered with a page this service could not parse. Retrying will not help; the service needs a new release.</td></tr>
+      <tr><td><code>rate_limited</code></td><td>429</td><td>Too many requests from your address. See <code>Retry-After</code>.</td></tr>
+      <tr><td><code>timeout</code></td><td>504</td><td>The request outlived its deadline.</td></tr>
+      <tr><td><code>internal</code></td><td>500</td><td>A bug. The <code>request_id</code> will be in the logs.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Caching</h2>
+  <p>
+    Snapshots are held in memory for a short window and concurrent misses for the same board are
+    collapsed into a single request to tgju.org. <code>Cache-Control</code> on each response reports
+    the remaining window, so a CDN in front of this service can extend the same policy outward.
+  </p>
+
+  <h2>Compatibility with the original API</h2>
+  <p>
+    <code>/api/price/currency</code> and <code>/api/price/gold</code> return exactly what
+    <a href="https://github.com/BlackIQ/tgju-api">BlackIQ/tgju-api</a> returned, so an existing client can
+    change one hostname and nothing else. <code>/api/price/coin</code> extends the same shape to coins.
+    New clients should use <code>/v1</code>, which carries the parsed numbers, the change and the timestamp.
+  </p>
+
+  <h2>Using it as a Go library instead</h2>
+  <p>The same code that backs this service is importable, so a Go service can skip the HTTP hop entirely.</p>
+<pre><code>import tgju "github.com/amiranmanesh/tgju-api-go"
+
+client := tgju.New()
+
+snap, err := client.Gold(ctx)
+if err != nil {
+    return err
+}
+if item, ok := snap.Lookup("geram18"); ok {
+    fmt.Println(item.Title, item.Price.Toman())
+}</code></pre>
+
+  <div class="grid">
+    <div class="card">
+      <h4>Source</h4>
+      <p><a href="https://github.com/amiranmanesh/tgju-api-go">github.com/amiranmanesh/tgju-api-go</a></p>
+    </div>
+    <div class="card">
+      <h4>Package documentation</h4>
+      <p><a href="https://pkg.go.dev/github.com/amiranmanesh/tgju-api-go">pkg.go.dev</a></p>
+    </div>
+    <div class="card">
+      <h4>Data source</h4>
+      <p><a href="https://www.tgju.org">tgju.org</a> — this project is not affiliated with it.</p>
+    </div>
+  </div>
+
+</main>
+
+<footer class="wrap">
+  tgju-api-go v{{.Version}} · MIT licensed · prices belong to tgju.org
+</footer>
+
+</body>
+</html>

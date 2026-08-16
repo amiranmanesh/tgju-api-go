@@ -1,0 +1,424 @@
+openapi: 3.1.0
+
+info:
+  title: TGJU API
+  version: 1.0.0
+  summary: Live currency, gold and coin prices scraped from tgju.org.
+  description: |
+    A read-only JSON API over the price boards published by
+    [tgju.org](https://www.tgju.org). Prices are quoted in Iranian rial.
+
+    Responses are served from an in-process cache, so calling an endpoint in a
+    tight loop does not multiply requests to tgju.org. `Cache-Control` on each
+    response tells you how long the data stays fresh.
+
+    Every endpoint is a `GET`. Failures share one body shape, documented as
+    `Error` below, and carry a machine-readable `code`.
+  license:
+    name: MIT
+    identifier: MIT
+  contact:
+    name: tgju-api-go
+    url: https://github.com/amiranmanesh/tgju-api-go
+
+servers:
+  - url: http://localhost:8080
+    description: A local instance
+
+tags:
+  - name: Prices
+    description: The versioned API. Use this for anything new.
+  - name: Compatibility
+    description: |
+      The shape of the original Python service, kept so an existing client can
+      switch hosts without changing its parsing. All values are strings.
+  - name: Operations
+    description: Probes, metrics and this description.
+
+paths:
+  /v1/markets:
+    get:
+      tags: [Prices]
+      operationId: listMarkets
+      summary: List the supported markets
+      responses:
+        "200":
+          description: The markets this instance can serve.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [markets]
+                properties:
+                  markets:
+                    type: array
+                    items: { $ref: "#/components/schemas/MarketInfo" }
+
+  /v1/markets/{market}:
+    get:
+      tags: [Prices]
+      operationId: getMarket
+      summary: Full snapshot of one market
+      parameters:
+        - $ref: "#/components/parameters/Market"
+        - $ref: "#/components/parameters/Category"
+        - $ref: "#/components/parameters/Keys"
+      responses:
+        "200":
+          description: The board, grouped into the categories tgju renders.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Snapshot" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+
+  /v1/markets/{market}/items:
+    get:
+      tags: [Prices]
+      operationId: listMarketItems
+      summary: Flat list of one market's instruments
+      parameters:
+        - $ref: "#/components/parameters/Market"
+        - $ref: "#/components/parameters/Category"
+        - $ref: "#/components/parameters/Keys"
+      responses:
+        "200":
+          description: Every instrument of the board, category grouping removed.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [market, fetched_at, count, items]
+                properties:
+                  market: { $ref: "#/components/schemas/Market" }
+                  fetched_at: { type: string, format: date-time }
+                  count: { type: integer }
+                  items:
+                    type: array
+                    items: { $ref: "#/components/schemas/Item" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+
+  /v1/markets/{market}/items/{key}:
+    get:
+      tags: [Prices]
+      operationId: getMarketItem
+      summary: One instrument of one market
+      parameters:
+        - $ref: "#/components/parameters/Market"
+        - $ref: "#/components/parameters/Key"
+      responses:
+        "200":
+          description: The instrument.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Item" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+
+  /v1/items/{key}:
+    get:
+      tags: [Prices]
+      operationId: getItem
+      summary: One instrument, looked up across every market
+      description: |
+        Use this when you know the tgju key but not which board it lives on.
+        Markets are searched in alphabetical order and the first match wins.
+      parameters:
+        - $ref: "#/components/parameters/Key"
+      responses:
+        "200":
+          description: The instrument.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Item" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+
+  /v1/snapshot:
+    get:
+      tags: [Prices]
+      operationId: getSnapshot
+      summary: Every market in one response
+      responses:
+        "200":
+          description: One snapshot per supported market, keyed by market name.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [fetched_at, markets]
+                properties:
+                  fetched_at: { type: string, format: date-time }
+                  markets:
+                    type: object
+                    additionalProperties: { $ref: "#/components/schemas/Snapshot" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+
+  /api/price/currency:
+    get:
+      tags: [Compatibility]
+      operationId: legacyCurrency
+      summary: Currency prices in the shape of the original Python API
+      responses:
+        "200":
+          description: A flat array of price rows, every value a string.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/LegacyItem" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+
+  /api/price/gold:
+    get:
+      tags: [Compatibility]
+      operationId: legacyGold
+      summary: Gold prices in the shape of the original Python API
+      responses:
+        "200":
+          description: An array of categories, each carrying its price rows.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/LegacyCategory" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+
+  /api/price/coin:
+    get:
+      tags: [Compatibility]
+      operationId: legacyCoin
+      summary: Coin prices in the shape of the original Python API
+      responses:
+        "200":
+          description: An array of categories, each carrying its price rows.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/LegacyCategory" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+
+  /healthz:
+    get:
+      tags: [Operations]
+      operationId: health
+      summary: Liveness probe
+      description: Answers as long as the process is running. It never touches tgju.org.
+      responses:
+        "200":
+          description: The process is alive.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, const: ok }
+                  version: { type: string }
+
+  /readyz:
+    get:
+      tags: [Operations]
+      operationId: ready
+      summary: Readiness probe
+      description: |
+        Fetches the currency board, through the cache, to prove the instance can
+        do its job. Answers 503 when tgju.org cannot be reached or understood.
+      responses:
+        "200":
+          description: The instance can serve traffic.
+        "503":
+          description: The instance cannot reach or parse tgju.org.
+
+  /metrics:
+    get:
+      tags: [Operations]
+      operationId: metrics
+      summary: Prometheus metrics
+      responses:
+        "200":
+          description: Request counts and latency histograms in the text exposition format.
+          content:
+            text/plain: {}
+
+  /openapi.yaml:
+    get:
+      tags: [Operations]
+      operationId: openapi
+      summary: This description
+      responses:
+        "200":
+          description: The OpenAPI document.
+          content:
+            application/yaml: {}
+
+components:
+  parameters:
+    Market:
+      name: market
+      in: path
+      required: true
+      description: The board to read. Aliases such as `fx`, `gold-chart` and `coins` are accepted.
+      schema: { $ref: "#/components/schemas/Market" }
+      example: gold
+
+    Key:
+      name: key
+      in: path
+      required: true
+      description: The tgju identifier of an instrument.
+      schema: { type: string }
+      example: geram18
+
+    Category:
+      name: category
+      in: query
+      required: false
+      description: Keep only the category with this exact title.
+      schema: { type: string }
+      example: قیمت نقره
+
+    Keys:
+      name: keys
+      in: query
+      required: false
+      description: A comma separated list of instrument keys to keep.
+      schema: { type: string }
+      example: price_dollar_rl,price_eur
+
+  responses:
+    NotFound:
+      description: No such market or instrument.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    BadGateway:
+      description: tgju.org could not be reached, or served a page this service could not parse.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+
+  schemas:
+    Market:
+      type: string
+      enum: [currency, gold, coin]
+      description: |
+        `currency` is the foreign exchange board, `gold` covers gold, silver and
+        mesghal, `coin` is the Bahar Azadi board.
+
+    MarketInfo:
+      type: object
+      required: [name, label, source, endpoint]
+      properties:
+        name: { $ref: "#/components/schemas/Market" }
+        label: { type: string, description: The Persian name of the board., example: طلا و نقره }
+        source: { type: string, format: uri, description: The tgju.org page the data comes from. }
+        endpoint: { type: string, description: The path on this API that serves the board. }
+
+    Amount:
+      type: object
+      description: A price as tgju rendered it, together with its parsed value in rial.
+      required: [text, value]
+      properties:
+        text: { type: string, example: "1,864,000" }
+        value: { type: number, example: 1864000 }
+
+    Status:
+      type: string
+      enum: ["", low, high]
+      description: |
+        The direction of the move since the previous close, as tgju classifies
+        it. Empty when the site published no direction.
+
+    Change:
+      type: object
+      required: [status, percent, amount]
+      properties:
+        status: { $ref: "#/components/schemas/Status" }
+        percent:
+          type: number
+          description: The size of the move in percent, always positive. Read `status` for the sign.
+          example: 0.32
+        amount: { $ref: "#/components/schemas/Amount" }
+
+    Item:
+      type: object
+      required: [key, title, market, category, price, low, high, change, time]
+      properties:
+        key: { type: string, description: The tgju identifier. Stable across redesigns., example: price_dollar_rl }
+        title: { type: string, example: دلار }
+        market: { $ref: "#/components/schemas/Market" }
+        category: { type: string, description: The caption of the table the row sat in., example: عنوان }
+        price: { $ref: "#/components/schemas/Amount" }
+        low: { $ref: "#/components/schemas/Amount" }
+        high: { $ref: "#/components/schemas/Amount" }
+        change: { $ref: "#/components/schemas/Change" }
+        time:
+          type: string
+          description: |
+            The timestamp tgju prints next to the row: a clock for actively
+            traded instruments, a Persian date for stale ones. Passed through as
+            text because the site gives no year and no timezone.
+          example: "11:49:45"
+        profile_url: { type: string, format: uri }
+
+    Category:
+      type: object
+      required: [title, items]
+      properties:
+        title: { type: string, example: قیمت نقره }
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/Item" }
+
+    Snapshot:
+      type: object
+      required: [market, source, fetched_at, categories]
+      properties:
+        market: { $ref: "#/components/schemas/Market" }
+        source: { type: string, format: uri }
+        fetched_at: { type: string, format: date-time }
+        categories:
+          type: array
+          items: { $ref: "#/components/schemas/Category" }
+
+    LegacyItem:
+      type: object
+      description: The original API's row. Every value is a string.
+      required: [title, price, key, status, low_price, high_price]
+      properties:
+        title: { type: string, example: دینار کویت }
+        price: { type: string, example: "6,045,600" }
+        key: { type: string, example: price_kwd }
+        status: { $ref: "#/components/schemas/Status" }
+        low_price: { type: string, example: "6,024,800" }
+        high_price: { type: string, example: "6,097,600" }
+
+    LegacyCategory:
+      type: object
+      required: [title, prices]
+      properties:
+        title: { type: string, example: قیمت طلا }
+        prices:
+          type: array
+          items: { $ref: "#/components/schemas/LegacyItem" }
+
+    Error:
+      type: object
+      required: [code, message]
+      properties:
+        code:
+          type: string
+          enum:
+            - not_found
+            - unknown_market
+            - upstream_unavailable
+            - upstream_changed
+            - rate_limited
+            - timeout
+            - internal
+        message: { type: string }
+        request_id:
+          type: string
+          description: Echoes the `X-Request-Id` of the request.
