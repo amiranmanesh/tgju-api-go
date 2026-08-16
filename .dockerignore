@@ -1,0 +1,21 @@
+# Everything the image does not need. Keeping this tight is what makes the
+# build context small and the layer cache useful.
+.git
+.github
+.gitignore
+.dockerignore
+.golangci.yml
+.goreleaser.yaml
+
+bin/
+dist/
+docs/
+wiki/
+examples/
+
+*.md
+!README.md
+
+coverage.out
+coverage.html
+*.test

@@ -1,0 +1,67 @@
+# Run the API locally:
+#
+#   docker compose up --build
+#   curl localhost:8080/v1/markets/gold
+#   open http://localhost:8080/docs
+#
+# Every setting below has a sensible default baked into the image; they are
+# spelled out here because a compose file is also documentation.
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        VERSION: ${TGJU_VERSION:-dev}
+    image: ghcr.io/amiranmanesh/tgju-api-go:${TGJU_VERSION:-dev}
+    container_name: tgju-api
+    restart: unless-stopped
+
+    ports:
+      - "${TGJU_PORT:-8080}:8080"
+
+    environment:
+      # Every flag of `tgju serve` has a TGJU_ variable; see `tgju serve -h`.
+      TGJU_ADDR: ":8080"
+
+      # How long a snapshot is reused. tgju updates every few seconds, so a
+      # short window keeps the data fresh while collapsing a burst of API
+      # requests into one outgoing request.
+      TGJU_CACHE_TTL: "30s"
+
+      # Deadline for one fetch of a tgju page, retries included.
+      TGJU_TIMEOUT: "20s"
+      TGJU_RETRIES: "3"
+
+      # Per-client rate limit. Raise it behind a trusted gateway, or set it to
+      # 0 to turn the limiter off entirely.
+      TGJU_RATE_LIMIT: "20"
+      TGJU_RATE_BURST: "40"
+
+      # Comma separated allowed origins, or empty to send no CORS headers.
+      TGJU_CORS: "*"
+
+      TGJU_LOG_LEVEL: "info"
+      TGJU_LOG_JSON: "true"
+
+    healthcheck:
+      test: ["CMD", "/usr/local/bin/healthcheck"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+    # The process needs no filesystem of its own: it reads a web page and
+    # answers HTTP. Locking it down costs nothing.
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 128M
