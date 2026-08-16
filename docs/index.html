@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>tgju-api-go — live Iranian market prices, as a Go library and a JSON API</title>
+<meta name="description" content="Live currency, gold and coin prices from tgju.org. Import it as a Go module, or run it as a container and call the JSON API.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪙</text></svg>">
+<style>
+  :root {
+    --bg: #fbfaf8;
+    --panel: #ffffff;
+    --ink: #1b1915;
+    --muted: #6b655c;
+    --line: #e6e1d9;
+    --accent: #9a6b12;
+    --accent-soft: #f7f0e0;
+    --code-bg: #f4f1ec;
+    --up: #2c6e49;
+    --down: #b3341f;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14130e;
+      --panel: #1d1b15;
+      --ink: #ece7dd;
+      --muted: #9c958a;
+      --line: #322e25;
+      --accent: #dfa94d;
+      --accent-soft: #29231733;
+      --code-bg: #100f0a;
+      --up: #6cc08b;
+      --down: #e5806c;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 62rem; margin: 0 auto; padding: 0 1.5rem; }
+
+  /* Header ---------------------------------------------------------- */
+  header { border-bottom: 1px solid var(--line); background: var(--panel); padding: 4rem 0 3rem; }
+  .eyebrow {
+    font-size: .8rem; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--accent); font-weight: 600; margin: 0 0 .8rem;
+  }
+  h1 { margin: 0 0 .8rem; font-size: clamp(2rem, 5vw, 2.9rem); letter-spacing: -.03em; line-height: 1.15; }
+  .lede { font-size: 1.12rem; color: var(--muted); max-width: 40rem; margin: 0 0 1.8rem; }
+  .cta { display: flex; gap: .7rem; flex-wrap: wrap; }
+  .btn {
+    display: inline-block; padding: .6rem 1.15rem; border-radius: 8px;
+    text-decoration: none; font-weight: 600; font-size: .93rem;
+    border: 1px solid var(--line); color: var(--ink); background: var(--bg);
+    transition: transform .12s ease, border-color .12s ease;
+  }
+  .btn:hover { transform: translateY(-1px); border-color: var(--accent); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  @media (prefers-color-scheme: dark) { .btn.primary { color: #1b1915; } }
+
+  /* Sections -------------------------------------------------------- */
+  main { padding: 3.5rem 0 5rem; }
+  section { margin-bottom: 4rem; }
+  h2 { font-size: 1.35rem; letter-spacing: -.02em; margin: 0 0 .4rem; }
+  h3 { font-size: 1rem; margin: 2rem 0 .5rem; }
+  .sub { color: var(--muted); margin: 0 0 1.4rem; max-width: 42rem; }
+
+  .grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); }
+  .card {
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: 12px; padding: 1.2rem 1.3rem;
+  }
+  .card h4 { margin: 0 0 .35rem; font-size: .97rem; }
+  .card p { margin: 0; color: var(--muted); font-size: .9rem; }
+
+  code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .865rem; }
+  pre {
+    background: var(--code-bg); border: 1px solid var(--line); border-radius: 10px;
+    padding: 1rem 1.15rem; overflow-x: auto; line-height: 1.55; margin: .8rem 0;
+  }
+  p code, li code, td code { background: var(--accent-soft); color: var(--accent); padding: .1rem .35rem; border-radius: 4px; }
+  a { color: var(--accent); }
+
+  /* Two-column split ------------------------------------------------ */
+  .split { display: grid; gap: 1.6rem; grid-template-columns: 1fr; }
+  @media (min-width: 52rem) { .split { grid-template-columns: 1fr 1fr; } }
+  .split > div > h3:first-child { margin-top: 0; }
+
+  table { width: 100%; border-collapse: collapse; font-size: .9rem; margin: 1rem 0; }
+  th, td { text-align: left; padding: .55rem .6rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-size: .76rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 600; }
+
+  .note {
+    border-left: 3px solid var(--accent); background: var(--accent-soft);
+    padding: .8rem 1rem; border-radius: 0 8px 8px 0; margin: 1.2rem 0; font-size: .92rem;
+  }
+  .rtl { direction: rtl; text-align: right; font-size: .95rem; }
+
+  footer { border-top: 1px solid var(--line); padding: 2rem 0; color: var(--muted); font-size: .87rem; }
+  footer a { color: inherit; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <p class="eyebrow">Go · MIT · one dependency</p>
+    <h1>Live Iranian market prices,<br>as a library <em>and</em> a service</h1>
+    <p class="lede">
+      <strong>tgju-api-go</strong> reads the currency, gold and coin boards published by
+      tgju.org and hands them back as ordinary Go values — or as JSON over HTTP, from a
+      container you run yourself.
+    </p>
+    <div class="cta">
+      <a class="btn primary" href="./api.html">API reference</a>
+      <a class="btn" href="https://pkg.go.dev/github.com/amiranmanesh/tgju-api-go">Go package docs</a>
+      <a class="btn" href="https://github.com/amiranmanesh/tgju-api-go">Source</a>
+      <a class="btn" href="https://github.com/amiranmanesh/tgju-api-go/wiki">Wiki</a>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section>
+    <h2>Both halves, one codebase</h2>
+    <p class="sub">
+      The same client backs the import and the endpoint, so the two can never disagree
+      about what a price is. Pick whichever hop you would rather not pay for.
+    </p>
+
+    <div class="split">
+      <div>
+        <h3>As a Go module</h3>
+<pre><code>go get github.com/amiranmanesh/tgju-api-go</code></pre>
+<pre><code>client := tgju.New()
+
+snap, err := client.Gold(ctx)
+if err != nil {
+    return err
+}
+
+item, _ := snap.Lookup("geram18")
+fmt.Println(item.Title, item.Price.Toman())</code></pre>
+        <p class="sub">No HTTP hop, no sidecar, no second process to operate.</p>
+      </div>
+
+      <div>
+        <h3>As a service</h3>
+<pre><code>docker run -p 8080:8080 \
+  ghcr.io/amiranmanesh/tgju-api-go:latest</code></pre>
+<pre><code>curl localhost:8080/v1/markets/gold
+curl localhost:8080/v1/items/price_dollar_rl
+curl localhost:8080/api/price/currency</code></pre>
+        <p class="sub">
+          Or mount it inside a service you already run:
+          <code>mux.Handle("/prices/", http.StripPrefix("/prices", server.New(client)))</code>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>What you get back</h2>
+    <p class="sub">
+      Every amount carries the site's own rendering next to the parsed number, so you can
+      show one and compute with the other without writing a parser of your own.
+    </p>
+<pre><code>{
+  "key": "price_dollar_rl",
+  "title": "دلار",
+  "market": "currency",
+  "category": "عنوان",
+  "price": { "text": "1,864,000", "value": 1864000 },
+  "low":   { "text": "1,860,800", "value": 1860800 },
+  "high":  { "text": "1,869,100", "value": 1869100 },
+  "change": {
+    "status": "low",
+    "percent": 0.32,
+    "amount": { "text": "6,050", "value": 6050 }
+  },
+  "time": "11:49:45",
+  "profile_url": "https://www.tgju.org/profile/price_dollar_rl"
+}</code></pre>
+    <div class="note">
+      Prices are quoted in <strong>rial</strong>, as tgju quotes them.
+      <code>Amount.Toman()</code> converts; the CLI takes <code>--unit toman</code>.
+    </div>
+  </section>
+
+  <section>
+    <h2>Designed for a service that has to stay up</h2>
+    <div class="grid">
+      <div class="card">
+        <h4>Requests collapse</h4>
+        <p>Snapshots are cached for a short window, and concurrent misses for the same board become one request upstream — not one per caller.</p>
+      </div>
+      <div class="card">
+        <h4>Failures are typed</h4>
+        <p>“tgju is down” and “tgju changed its markup” are different errors with different HTTP statuses. One is worth a retry; the other is worth a release.</p>
+      </div>
+      <div class="card">
+        <h4>Column order is read, not assumed</h4>
+        <p>The parser follows the table headers, so a reshuffle upstream cannot silently swap the daily low with the daily high.</p>
+      </div>
+      <div class="card">
+        <h4>Persian numerals handled</h4>
+        <p>Persian and Arabic-Indic digits, thousands separators and zero-width joiners are normalised before anything is parsed.</p>
+      </div>
+      <div class="card">
+        <h4>One dependency</h4>
+        <p><code>golang.org/x/net/html</code>, and nothing else. No web framework, no metrics client, no YAML parser.</p>
+      </div>
+      <div class="card">
+        <h4>Operable out of the box</h4>
+        <p>Liveness and readiness probes, Prometheus metrics, request IDs, structured logs, a rate limiter and a scratch-based image that runs as non-root.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Markets</h2>
+    <table>
+      <thead>
+        <tr><th style="width:8rem">Market</th><th style="width:12rem">Board</th><th>Source</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>currency</code></td><td class="rtl">ارز</td><td><a href="https://www.tgju.org/currency">tgju.org/currency</a></td></tr>
+        <tr><td><code>gold</code></td><td class="rtl">طلا و نقره</td><td><a href="https://www.tgju.org/gold-chart">tgju.org/gold-chart</a></td></tr>
+        <tr><td><code>coin</code></td><td class="rtl">سکه</td><td><a href="https://www.tgju.org/coin">tgju.org/coin</a></td></tr>
+      </tbody>
+    </table>
+    <p class="sub">
+      The crypto board is built by client-side JavaScript and is deliberately absent:
+      scraping it would need a browser, and a browser has no place in a library.
+    </p>
+  </section>
+
+  <section>
+    <h2>Moving from the Python service</h2>
+    <p class="sub">
+      This project reimplements <a href="https://github.com/BlackIQ/tgju-api">BlackIQ/tgju-api</a>.
+      Its response shape is preserved under <code>/api/price/*</code>, byte for byte, so an
+      existing client changes one hostname and nothing else.
+    </p>
+    <table>
+      <thead><tr><th style="width:18rem">Original</th><th>Here</th></tr></thead>
+      <tbody>
+        <tr><td><code>GET /api/price/currency</code></td><td>Same path, same body</td></tr>
+        <tr><td><code>GET /api/price/gold</code></td><td>Same path, same body</td></tr>
+        <tr><td>—</td><td><code>GET /api/price/coin</code>, the same shape for coins</td></tr>
+        <tr><td>—</td><td><code>GET /v1/…</code> with parsed numbers, the change and the timestamp</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Where to go next</h2>
+    <div class="grid">
+      <div class="card">
+        <h4><a href="./api.html">API reference</a></h4>
+        <p>Every endpoint, parameter and response, rendered from the OpenAPI document the server itself serves.</p>
+      </div>
+      <div class="card">
+        <h4><a href="https://pkg.go.dev/github.com/amiranmanesh/tgju-api-go">Package documentation</a></h4>
+        <p>The Go API, with runnable examples.</p>
+      </div>
+      <div class="card">
+        <h4><a href="https://github.com/amiranmanesh/tgju-api-go/wiki">Wiki</a></h4>
+        <p>Deployment, configuration, the instrument key catalogue, and how to add a market.</p>
+      </div>
+      <div class="card">
+        <h4><a href="./openapi.yaml">openapi.yaml</a></h4>
+        <p>The raw document, for generating a client.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>
+      MIT licensed · <a href="https://github.com/amiranmanesh/tgju-api-go">github.com/amiranmanesh/tgju-api-go</a>
+    </p>
+    <p>
+      Prices belong to <a href="https://www.tgju.org">tgju.org</a>. This project is not affiliated with,
+      endorsed by, or connected to tgju.org, and makes no claim about the accuracy of the data it relays.
+      Check their terms before putting it in front of paying users.
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>

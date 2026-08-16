@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>tgju-api-go — API reference</title>
+<meta name="description" content="The HTTP API of tgju-api-go: live currency, gold and coin prices from tgju.org.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪙</text></svg>">
+<style>
+  body { margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, sans-serif; }
+  .bar {
+    display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+    padding: .7rem 1.2rem; border-bottom: 1px solid #e6e1d9;
+    font-size: .88rem; background: #fbfaf8;
+  }
+  .bar a { color: #9a6b12; text-decoration: none; font-weight: 600; }
+  .bar a:hover { text-decoration: underline; }
+  .bar .spacer { flex: 1; }
+  @media (prefers-color-scheme: dark) {
+    .bar { background: #14130e; border-color: #322e25; color: #ece7dd; }
+    .bar a { color: #dfa94d; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="bar">
+  <a href="./">← tgju-api-go</a>
+  <span class="spacer"></span>
+  <a href="./openapi.yaml">openapi.yaml</a>
+  <a href="https://pkg.go.dev/github.com/amiranmanesh/tgju-api-go">Go docs</a>
+  <a href="https://github.com/amiranmanesh/tgju-api-go">GitHub</a>
+</nav>
+
+<!--
+  The reference is rendered from the same openapi.yaml the server embeds and
+  serves at /openapi.yaml, so this page cannot drift from the running service.
+
+  Unlike the server's own /docs page, this one is allowed a CDN: it is a public
+  web page, not something that has to work inside a container on a closed
+  network.
+-->
+<div id="reference"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference@1"></script>
+<script>
+  Scalar.createApiReference('#reference', {
+    url: './openapi.yaml',
+    theme: 'default',
+    layout: 'modern',
+    hideDownloadButton: false,
+    metaData: { title: 'tgju-api-go — API reference' },
+  })
+</script>
+
+<noscript>
+  <p style="padding:1.5rem;max-width:40rem">
+    This page renders the API reference with JavaScript. Without it, read
+    <a href="./openapi.yaml">openapi.yaml</a> directly, or run the service and
+    open <code>/docs</code>, which is a self-contained page that needs neither
+    JavaScript nor a network.
+  </p>
+</noscript>
+
+</body>
+</html>
