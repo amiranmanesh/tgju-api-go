@@ -6,4 +6,4 @@ package tgju
 // available to [DefaultUserAgent] at package initialisation, and so that a
 // caller vendoring the source still reports something meaningful. The binary in
 // cmd/tgju overrides its own copy at link time with the git tag.
-const Version = "1.0.0"
+const Version = "1.0.1"

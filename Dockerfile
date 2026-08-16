@@ -16,6 +16,12 @@ ENV GOTOOLCHAIN=local \
 
 WORKDIR /src
 
+# Alpine ships no timezone database, so /usr/share/zoneinfo does not exist
+# until tzdata is installed. The runtime stage copies it: without it, a
+# container started with TZ=Asia/Tehran silently falls back to UTC, which for
+# an Iranian price tool is a wrong answer rather than a missing one.
+RUN apk add --no-cache tzdata
+
 # Dependencies first: this layer only changes when go.mod or go.sum does.
 COPY go.mod go.sum ./
 RUN --mount=type=cache,target=/go/pkg/mod \
