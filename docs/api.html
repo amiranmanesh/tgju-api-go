@@ -6,6 +6,26 @@
 <title>tgju-api-go — API reference</title>
 <meta name="description" content="The HTTP API of tgju-api-go: live currency, gold and coin prices from tgju.org.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪙</text></svg>">
+
+<!--
+  This page is served from amiranmanesh.github.io, an origin shared with every
+  other project page on that account. A third-party script here is therefore
+  not sandboxed to this project, so the one script this page loads is fenced in
+  three ways: an exact pinned version, a Subresource Integrity hash that must
+  match before the browser will execute it, and the policy below, which forbids
+  loading script from anywhere else at all.
+-->
+<meta http-equiv="Content-Security-Policy" content="
+  default-src 'none';
+  script-src 'self' https://cdn.jsdelivr.net;
+  worker-src blob:;
+  style-src 'self' 'unsafe-inline';
+  font-src 'self' data:;
+  img-src 'self' data: https:;
+  connect-src 'self';
+  base-uri 'none';
+  form-action 'none';
+  frame-ancestors 'none'">
 <style>
   body { margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, sans-serif; }
   .bar {
@@ -38,20 +58,29 @@
 
   Unlike the server's own /docs page, this one is allowed a CDN: it is a public
   web page, not something that has to work inside a container on a closed
-  network.
+  network. The server's page stays dependency-free precisely so that this
+  convenience never becomes a requirement.
+
+  The version is pinned exactly rather than floating on @1. A range tag means
+  the bytes this page executes can change without anyone reviewing them — a
+  compromised or hijacked publish reaches every visitor immediately. Pinning is
+  also what makes the integrity hash possible at all: it can only be computed
+  against a fixed artefact.
+
+  To upgrade, pick the new version and recompute the hash:
+
+    v=1.66.0
+    curl -sL "https://cdn.jsdelivr.net/npm/@scalar/api-reference@$v" |
+      openssl dgst -sha384 -binary | openssl base64 -A
 -->
 <div id="reference"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference@1"></script>
-<script>
-  Scalar.createApiReference('#reference', {
-    url: './openapi.yaml',
-    theme: 'default',
-    layout: 'modern',
-    hideDownloadButton: false,
-    metaData: { title: 'tgju-api-go — API reference' },
-  })
-</script>
+<script
+  src="https://cdn.jsdelivr.net/npm/@scalar/api-reference@1.65.1"
+  integrity="sha384-NAMzfHXRsxRYhcKmRnZGVLvlBeXTWtpYd0jWgeZ7fk89X95GIJBK1H4bUwkP4IZJ"
+  crossorigin="anonymous"
+  referrerpolicy="no-referrer"></script>
+<script src="./api-init.js"></script>
 
 <noscript>
   <p style="padding:1.5rem;max-width:40rem">

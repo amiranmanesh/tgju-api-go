@@ -38,7 +38,11 @@ HTTP. The interesting attack surface follows from that:
 - **The container image.** It runs as uid 65532 on `scratch` with no shell. A path to
   privilege escalation is in scope.
 - **Supply chain.** The module has one dependency; releases carry build provenance
-  attestation. Report anything that undermines that.
+  attestation. The documentation site loads exactly one third-party script, pinned to an
+  exact version with a Subresource Integrity hash and confined by a
+  Content-Security-Policy — GitHub Pages serves every project on an account from one
+  origin, so a script there is not sandboxed to this project. `make docs-check` enforces
+  that, in CI and again before publishing. Report anything that undermines any of it.
 
 ## What is not in scope
 

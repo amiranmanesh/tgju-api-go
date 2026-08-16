@@ -144,11 +144,16 @@ pages: ## Assemble the GitHub Pages site into ./_site
 	cp server/openapi.yaml _site/openapi.yaml
 	touch _site/.nojekyll
 	$(GO) run ./internal/cmd/checkspec _site/openapi.yaml
+	$(GO) run ./internal/cmd/checkdocs _site
 	@echo "site assembled in ./_site — serve it with: python3 -m http.server -d _site 8000"
 
 .PHONY: spec
 spec: ## Check the OpenAPI document is internally consistent
 	$(GO) run ./internal/cmd/checkspec server/openapi.yaml
+
+.PHONY: docs-check
+docs-check: ## Fail when a docs page loads an unpinned or unhashed third party script
+	$(GO) run ./internal/cmd/checkdocs docs
 
 # --------------------------------------------------------------------------
 # Docker
@@ -175,7 +180,7 @@ fixtures: ## Refresh the saved tgju.org pages used by the tests
 	$(GO) run ./internal/cmd/fixtures
 
 .PHONY: ci
-ci: lint deps-check spec test ## Everything the pipeline runs
+ci: lint deps-check spec docs-check test ## Everything the pipeline runs
 
 .PHONY: release-check
 release-check: ci cover ## Everything that must pass before a tag is pushed

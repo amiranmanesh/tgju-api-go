@@ -43,8 +43,13 @@ jobs:
       # A broken spec on the documentation site is worse than no spec, so it is
       # parsed before it is published.
       - name: Check the OpenAPI document parses
-        run: |
-          go run ./internal/cmd/checkspec _site/openapi.yaml
+        run: go run ./internal/cmd/checkspec _site/openapi.yaml
+
+      # The site is served from a shared github.io origin, so a third party
+      # script here is not sandboxed to this project. Nothing gets published
+      # that is not pinned to an exact version and integrity checked.
+      - name: Check the supply chain of the site
+        run: go run ./internal/cmd/checkdocs _site
 
       - uses: actions/configure-pages@v5
 

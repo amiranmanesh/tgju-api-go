@@ -46,6 +46,9 @@ jobs:
       - name: Check the dependency policy
         run: make deps-check
 
+      - name: Check the OpenAPI document and the site supply chain
+        run: make spec docs-check
+
       - name: Verify go.mod is tidy
         run: |
           go mod tidy

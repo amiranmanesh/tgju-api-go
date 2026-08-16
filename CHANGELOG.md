@@ -74,6 +74,14 @@ service.
 - A wiki kept in `wiki/` and published by a workflow, covering the library, the service,
   deployment, errors, instrument keys, how the scraper works and how to add a market.
 
+### Security
+
+- The one third-party script on the documentation site is pinned to an exact version,
+  carries a Subresource Integrity hash and is confined by a Content-Security-Policy.
+  GitHub Pages serves every project on an account from one origin, so a script there is
+  not sandboxed to this project. `make docs-check` enforces both rules, and the check runs
+  in CI and again before the site is published.
+
 ### Notes on the reimplementation
 
 - Absent values are `""` rather than `null` in the compatibility endpoints. This is the
