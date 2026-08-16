@@ -51,7 +51,7 @@ jobs:
       - name: Check the supply chain of the site
         run: go run ./internal/cmd/checkdocs _site
 
-      - uses: actions/configure-pages@v5
+      - uses: actions/configure-pages@v6
 
       - uses: actions/upload-pages-artifact@v3
         with:
