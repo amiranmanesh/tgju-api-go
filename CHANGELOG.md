@@ -18,6 +18,9 @@ Nothing yet.
   `dom.Parse` into `html.Parse` — that is the entire HTML parsing path, so every scrape
   reached them. The version had been written into `go.mod` by hand; `go mod tidy` does not
   upgrade an existing requirement, so it stayed stale until CI said otherwise.
+- **v1.0.0 is retracted.** Its binaries were published before CI reported the above, so
+  `go.mod` carries a `retract v1.0.0` directive: `go get` will not select it, and anyone
+  already on it is told to move. Upgrade with `go get github.com/amiranmanesh/tgju-api-go@latest`.
 
 ### Fixed
 
