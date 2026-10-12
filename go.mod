@@ -1,8 +1,8 @@
 module github.com/amiranmanesh/tgju-api-go
 
-go 1.26
+go 1.26.0
 
-require golang.org/x/net v0.58.0
+require golang.org/x/net v0.61.0
 
 // A retraction is published by the versions that follow it, so this directive
 // is what tells the module proxy — and therefore everyone's `go get` — not to
