@@ -134,7 +134,7 @@ jobs:
       # Provenance lets a consumer verify the image really was built from this
       # repository, by this workflow, from this commit.
       - name: Attest the build provenance
-        uses: actions/attest-build-provenance@v2
+        uses: actions/attest-build-provenance@v4
         with:
           subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           subject-digest: ${{ steps.build.outputs.digest }}
