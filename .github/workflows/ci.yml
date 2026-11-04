@@ -131,9 +131,12 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      # Scan with the newest toolchain, not the minimum in go.mod: the module
+      # declares `go 1.26`, which setup-go resolves to the unpatched 1.26 release,
+      # and govulncheck then reports every standard library fix made since.
       - uses: actions/setup-go@v7
         with:
-          go-version-file: go.mod
+          go-version: stable
           check-latest: true
 
       - name: govulncheck

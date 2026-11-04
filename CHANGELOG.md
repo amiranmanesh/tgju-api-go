@@ -10,6 +10,12 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Changed
 
 - Updated GitHub Actions versions for checkout, Go setup and GitHub Pages publishing.
+- Upgraded `golang.org/x/net` to v0.62.0, the build image to Go 1.27, and the
+  `upload-artifact`, `build-push-action`, `setup-buildx-action`,
+  `attest-build-provenance` and `codeql-action` actions to their latest majors.
+- The CI vulnerability scan now runs on the newest stable Go toolchain. `go 1.26` in
+  `go.mod` resolved to the unpatched 1.26 release, so `govulncheck` reported every
+  standard library fix made since.
 - Documented the one-time GHCR package visibility step required after the first
   container release.
 
