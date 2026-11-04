@@ -29,9 +29,12 @@ jobs:
         with:
           ref: ${{ inputs.tag || github.ref }}
 
+      # Newest patched toolchain, matching the CI vulnerability scan. `go 1.26` in
+      # go.mod resolves to the unpatched 1.26 release, which would ship the
+      # standard library vulnerabilities fixed since.
       - uses: actions/setup-go@v7
         with:
-          go-version-file: go.mod
+          go-version: stable
           check-latest: true
 
       - name: Lint
@@ -72,9 +75,12 @@ jobs:
           # GoReleaser needs the full history to build the changelog.
           fetch-depth: 0
 
+      # Newest patched toolchain, matching the CI vulnerability scan. `go 1.26` in
+      # go.mod resolves to the unpatched 1.26 release, which would ship the
+      # standard library vulnerabilities fixed since.
       - uses: actions/setup-go@v7
         with:
-          go-version-file: go.mod
+          go-version: stable
           check-latest: true
 
       - uses: goreleaser/goreleaser-action@v6
