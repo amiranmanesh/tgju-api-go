@@ -7,7 +7,7 @@
 # small and caches well. BuildKit cache mounts keep the module and build caches
 # between builds without baking them into the image.
 # ---------------------------------------------------------------------------
-FROM golang:1.26-alpine AS build
+FROM golang:1.27-alpine AS build
 
 # Reproducibility: build with exactly the toolchain go.mod asks for rather than
 # letting the builder fetch a newer one halfway through.
