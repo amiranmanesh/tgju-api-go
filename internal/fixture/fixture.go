@@ -25,6 +25,7 @@ var Paths = map[string]string{
 	"/currency":   "testdata/currency.html",
 	"/gold-chart": "testdata/gold.html",
 	"/coin":       "testdata/coin.html",
+	"/transfer":   "testdata/transfer.html",
 }
 
 // Page returns the saved page for a tgju.org path such as "/currency".

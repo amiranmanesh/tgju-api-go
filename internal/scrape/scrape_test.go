@@ -22,6 +22,7 @@ func TestTablesOnSavedPages(t *testing.T) {
 		{"/currency", 2, "عنوان", "price_dollar_rl"},
 		{"/gold-chart", 5, "قیمت طلا", "geram18"},
 		{"/coin", 5, "قیمت نقدی", "sekee"},
+		{"/transfer", 2, "عنوان", "transfer_usd"},
 	}
 
 	for _, tc := range tests {

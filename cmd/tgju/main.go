@@ -99,11 +99,11 @@ func usageErrorf(format string, args ...any) error {
 }
 
 func usage(w io.Writer) {
-	fmt.Fprint(w, `tgju — live currency, gold and coin prices from tgju.org
+	fmt.Fprint(w, `tgju — live currency, remittance, gold and coin prices from tgju.org
 
 Usage:
   tgju serve [flags]           start the HTTP API
-  tgju get <market> [flags]    print one board (currency, gold, coin)
+  tgju get <market> [flags]    print one board (currency, gold, coin, transfer)
   tgju item <key> [flags]      print one instrument, e.g. price_dollar_rl
   tgju watch <key> [flags]     follow one instrument until interrupted
   tgju markets                 list the supported boards

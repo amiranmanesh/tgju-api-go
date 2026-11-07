@@ -6,7 +6,7 @@ below is about making that day cheap.
 
 ## The shape of the pages
 
-All three boards render the same markup. One `<table class="... market-table ...">` per
+Every board renders the same markup. One `<table class="... market-table ...">` per
 section, and one row per instrument:
 
 ```html
@@ -96,7 +96,7 @@ on the page before trusting it.
 ## Why the CI has a job that is allowed to fail
 
 Every unit test runs against saved pages, which means the whole suite can be green while
-the live site has moved on. The `live` job in the CI workflow fetches all three boards
+the live site has moved on. The `live` job in the CI workflow fetches every board
 from the real tgju.org on every push to `main`. It does not block a merge — a red build
 because a third party site is down helps nobody — but it is the canary, and it is the
 first thing to look at when someone reports that prices stopped updating.

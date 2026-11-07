@@ -88,6 +88,8 @@ func TestGetMarket(t *testing.T) {
 		{"/v1/markets/currency", tgju.Currency},
 		{"/v1/markets/gold", tgju.Gold},
 		{"/v1/markets/coin", tgju.Coin},
+		{"/v1/markets/transfer", tgju.Transfer},
+		{"/v1/markets/havaleh", tgju.Transfer},  // alias
 		{"/v1/markets/fx", tgju.Currency},       // alias
 		{"/v1/markets/gold-chart", tgju.Gold},   // alias
 		{"/v1/markets/CURRENCY", tgju.Currency}, // case insensitive
@@ -241,6 +243,7 @@ func TestGetItemAcrossMarkets(t *testing.T) {
 		"price_dollar_rl": tgju.Currency,
 		"geram18":         tgju.Gold,
 		"sekee":           tgju.Coin,
+		"transfer_usd":    tgju.Transfer,
 	}
 	for key, want := range tests {
 		var item tgju.Item

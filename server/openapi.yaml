@@ -259,7 +259,7 @@ components:
       name: market
       in: path
       required: true
-      description: The board to read. Aliases such as `fx`, `gold-chart` and `coins` are accepted.
+      description: The board to read. Aliases such as `fx`, `gold-chart`, `coins` and `havaleh` are accepted.
       schema: { $ref: "#/components/schemas/Market" }
       example: gold
 
@@ -302,10 +302,11 @@ components:
   schemas:
     Market:
       type: string
-      enum: [currency, gold, coin]
+      enum: [currency, gold, coin, transfer]
       description: |
         `currency` is the foreign exchange board, `gold` covers gold, silver and
-        mesghal, `coin` is the Bahar Azadi board.
+        mesghal, `coin` is the Bahar Azadi board, `transfer` is the foreign
+        currency remittance (havaleh) board.
 
     MarketInfo:
       type: object

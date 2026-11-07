@@ -25,6 +25,9 @@ const (
 	Gold Market = "gold"
 	// Coin is the Bahar Azadi coin board, https://www.tgju.org/coin.
 	Coin Market = "coin"
+	// Transfer is the foreign currency remittance (havaleh) board,
+	// https://www.tgju.org/transfer.
+	Transfer Market = "transfer"
 )
 
 // source describes where a market lives on tgju.org.
@@ -42,6 +45,7 @@ var sources = map[Market]source{
 	Currency: {path: "/currency", label: "ارز"},
 	Gold:     {path: "/gold-chart", label: "طلا و نقره"},
 	Coin:     {path: "/coin", label: "سکه"},
+	Transfer: {path: "/transfer", label: "حواله ارزی"},
 }
 
 // Markets returns the supported markets in a stable order.
@@ -64,6 +68,8 @@ func ParseMarket(s string) (Market, error) {
 		return Gold, nil
 	case "coin", "coins", "سکه":
 		return Coin, nil
+	case "transfer", "transfers", "remittance", "havaleh", "havale", "حواله":
+		return Transfer, nil
 	default:
 		return "", fmt.Errorf("%w: %q", ErrUnknownMarket, s)
 	}

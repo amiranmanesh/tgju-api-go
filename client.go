@@ -67,6 +67,9 @@ func (c *Client) Gold(ctx context.Context) (Snapshot, error) { return c.Fetch(ct
 // Coin returns the Bahar Azadi coin board.
 func (c *Client) Coin(ctx context.Context) (Snapshot, error) { return c.Fetch(ctx, Coin) }
 
+// Transfer returns the foreign currency remittance (havaleh) board.
+func (c *Client) Transfer(ctx context.Context) (Snapshot, error) { return c.Fetch(ctx, Transfer) }
+
 // FetchAll returns a snapshot per market, fetched concurrently. Passing no
 // market fetches every supported one.
 //

@@ -51,6 +51,7 @@ var files = map[tgju.Market]string{
 	tgju.Currency: "currency.html",
 	tgju.Gold:     "gold.html",
 	tgju.Coin:     "coin.html",
+	tgju.Transfer: "transfer.html",
 }
 
 func main() {

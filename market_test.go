@@ -12,7 +12,7 @@ func TestMarkets(t *testing.T) {
 	t.Parallel()
 
 	got := tgju.Markets()
-	want := []tgju.Market{tgju.Coin, tgju.Currency, tgju.Gold}
+	want := []tgju.Market{tgju.Coin, tgju.Currency, tgju.Gold, tgju.Transfer}
 	if !slices.Equal(got, want) {
 		t.Fatalf("Markets() = %v, want %v", got, want)
 	}
@@ -43,6 +43,10 @@ func TestParseMarket(t *testing.T) {
 		{"coin", tgju.Coin},
 		{"coins", tgju.Coin},
 		{"سکه", tgju.Coin},
+		{"transfer", tgju.Transfer},
+		{"Remittance", tgju.Transfer},
+		{"havaleh", tgju.Transfer},
+		{"حواله", tgju.Transfer},
 	}
 
 	for _, tc := range tests {
