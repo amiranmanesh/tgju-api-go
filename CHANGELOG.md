@@ -7,6 +7,14 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- `transfer` market for the foreign currency remittance (havaleh) board,
+  [tgju.org/transfer](https://www.tgju.org/transfer), with the aliases `transfers`,
+  `remittance`, `havaleh`, `havale` and `حواله`, and a `Client.Transfer` shortcut. It is
+  served at `/v1/markets/transfer` and picked up by `/v1/markets`, `/v1/items/{key}`,
+  `FetchAll`, `Item` and the CLI. The legacy `/api/price/*` routes are unchanged.
+
 ### Changed
 
 - Updated GitHub Actions versions for checkout, Go setup and GitHub Pages publishing.

@@ -30,6 +30,7 @@ func TestFetchParsesEveryBoard(t *testing.T) {
 		{tgju.Currency, 2, "price_dollar_rl", "دلار"},
 		{tgju.Gold, 5, "geram18", "طلای 18 عیار / 750"},
 		{tgju.Coin, 5, "sekee", "سکه امامی"},
+		{tgju.Transfer, 2, "transfer_usd", "حواله دلار آمریکا شرکتی"},
 	}
 
 	for _, tc := range tests {
@@ -394,6 +395,7 @@ func TestItem(t *testing.T) {
 		{"price_dollar_rl", tgju.Currency},
 		{"geram18", tgju.Gold},
 		{"sekee", tgju.Coin},
+		{"transfer_eur", tgju.Transfer},
 	}
 
 	for _, tc := range tests {

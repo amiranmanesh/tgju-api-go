@@ -2,7 +2,7 @@
 
 # tgju-api-go
 
-**Live Iranian currency, gold and coin prices — as a Go library *and* as a JSON API.**
+**Live Iranian currency, remittance, gold and coin prices — as a Go library *and* as a JSON API.**
 
 [![CI](https://github.com/amiranmanesh/tgju-api-go/actions/workflows/ci.yml/badge.svg)](https://github.com/amiranmanesh/tgju-api-go/actions/workflows/ci.yml)
 [![Go Reference](https://pkg.go.dev/badge/github.com/amiranmanesh/tgju-api-go.svg)](https://pkg.go.dev/github.com/amiranmanesh/tgju-api-go)
@@ -160,8 +160,9 @@ curl localhost:8080/api/price/currency
 | GET | `/metrics` | Prometheus |
 | GET | `/openapi.yaml` `/docs` | The description, and a reference page |
 
-`{market}` accepts `currency`, `gold` and `coin`, plus the aliases `fx`, `gold-chart`,
-`coins`, `ارز`, `طلا`, `سکه`, case insensitively.
+`{market}` accepts `currency`, `gold`, `coin` and `transfer`, plus the aliases `fx`,
+`gold-chart`, `coins`, `remittance`, `havaleh`, `ارز`, `طلا`, `سکه`, `حواله`, case
+insensitively.
 
 Full reference: **[amiranmanesh.github.io/tgju-api-go/api.html](https://amiranmanesh.github.io/tgju-api-go/api.html)**.
 
@@ -289,6 +290,7 @@ Over the wire:
 | `currency` | ارز | [tgju.org/currency](https://www.tgju.org/currency) |
 | `gold` | طلا و نقره | [tgju.org/gold-chart](https://www.tgju.org/gold-chart) |
 | `coin` | سکه | [tgju.org/coin](https://www.tgju.org/coin) |
+| `transfer` | حواله ارزی | [tgju.org/transfer](https://www.tgju.org/transfer) |
 
 The crypto board is built by client-side JavaScript and is deliberately absent: reading it
 would need a headless browser, and a headless browser has no place in a library you import
@@ -401,7 +403,7 @@ parser, client, server and CLI suites, so all four agree on what tgju looks like
 them with `make fixtures`; the diff is the review.
 
 Because the fixtures are frozen, the suite can be green while the live site has moved on.
-That gap is covered by a CI job that fetches all three boards from the real tgju.org on
+That gap is covered by a CI job that fetches every board from the real tgju.org on
 every push to `main`. It is allowed to fail — a red build because a third party is down
 helps nobody — and it is the canary that goes off first when tgju redesigns a page.
 

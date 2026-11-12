@@ -50,8 +50,9 @@ background job share one cache and one connection pool. See `examples/embed`.
 | GET | `/openapi.yaml` | The API description |
 | GET | `/docs` | A self-contained reference page |
 
-`{market}` accepts `currency`, `gold`, `coin`, and the aliases `fx`, `gold-chart`,
-`coins`, `ارز`, `طلا`, `سکه`. It is case insensitive.
+`{market}` accepts `currency`, `gold`, `coin`, `transfer`, and the aliases `fx`,
+`gold-chart`, `coins`, `remittance`, `havaleh`, `ارز`, `طلا`, `سکه`, `حواله`. It is case
+insensitive.
 
 ## Query parameters
 

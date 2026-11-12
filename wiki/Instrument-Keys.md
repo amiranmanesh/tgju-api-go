@@ -100,6 +100,23 @@ exchange is closed outside trading hours.
 
 **سایر سکه‌ها** — pre-1386 coins: `sekee_down`, `nim_down`, `rob_down`.
 
+## Remittance — `/transfer`
+
+Two tables, both with a generic `عنوان` caption. Rates are in Rial.
+
+| Key | Title |
+| --- | --- |
+| `transfer_usd` | حواله دلار آمریکا شرکتی |
+| `transfer_usd2` | حواله دلار آمریکا شخصی |
+| `transfer_eur` | حواله یورو |
+| `transfer_gbp` | حواله پوند |
+| `transfer_aed` | حواله درهم امارات |
+| `transfer_cny` | حواله یوان چین |
+
+Also `transfer_cad`, `transfer_aud`, `transfer_try`, `transfer_inr`, `transfer_sek`,
+`transfer_chf` and others. Thinly traded rows such as `transfer_try` can carry a Persian
+date instead of a clock in their time column.
+
 ## Notes
 
 - The same instrument can appear on two boards under different keys — the spot coin

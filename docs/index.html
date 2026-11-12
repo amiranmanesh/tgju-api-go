@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>tgju-api-go — live Iranian market prices, as a Go library and a JSON API</title>
-<meta name="description" content="Live currency, gold and coin prices from tgju.org. Import it as a Go module, or run it as a container and call the JSON API.">
+<meta name="description" content="Live currency, remittance, gold and coin prices from tgju.org. Import it as a Go module, or run it as a container and call the JSON API.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪙</text></svg>">
 <style>
   :root {
@@ -113,7 +113,7 @@
     <p class="eyebrow">Go · MIT · one dependency</p>
     <h1>Live Iranian market prices,<br>as a library <em>and</em> a service</h1>
     <p class="lede">
-      <strong>tgju-api-go</strong> reads the currency, gold and coin boards published by
+      <strong>tgju-api-go</strong> reads the currency, remittance, gold and coin boards published by
       tgju.org and hands them back as ordinary Go values — or as JSON over HTTP, from a
       container you run yourself.
     </p>
@@ -234,6 +234,7 @@ curl localhost:8080/api/price/currency</code></pre>
         <tr><td><code>currency</code></td><td class="rtl">ارز</td><td><a href="https://www.tgju.org/currency">tgju.org/currency</a></td></tr>
         <tr><td><code>gold</code></td><td class="rtl">طلا و نقره</td><td><a href="https://www.tgju.org/gold-chart">tgju.org/gold-chart</a></td></tr>
         <tr><td><code>coin</code></td><td class="rtl">سکه</td><td><a href="https://www.tgju.org/coin">tgju.org/coin</a></td></tr>
+        <tr><td><code>transfer</code></td><td class="rtl">حواله ارزی</td><td><a href="https://www.tgju.org/transfer">tgju.org/transfer</a></td></tr>
       </tbody>
     </table>
     <p class="sub">
