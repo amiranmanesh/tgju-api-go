@@ -103,7 +103,8 @@ first thing to look at when someone reports that prices stopped updating.
 
 ## Why crypto is missing
 
-`https://www.tgju.org/crypto` builds its table with client-side JavaScript. Reading it
-would mean shipping a headless browser, and a headless browser has no place in a library
-you import to look up an exchange rate. If tgju ever server-renders that board, adding it
-is the ten lines described in [Adding a market](Adding-a-Market).
+`https://www.tgju.org/crypto` used to build its table with client-side JavaScript. As of
+November 2026 it is server-rendered, but not as a `market-table`: the rows live in
+`table#stocks-table.crypto-data-table-table`, with different columns and prices in dollars.
+The shared scraper cannot read it, so adding it means a second parser, not the ten lines
+described in [Adding a market](Adding-a-Market).

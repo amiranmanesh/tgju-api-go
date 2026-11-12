@@ -7,6 +7,8 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [1.1.0] — 2026-11-12
+
 ### Added
 
 - `transfer` market for the foreign currency remittance (havaleh) board,
@@ -26,6 +28,9 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   standard library fix made since.
 - Documented the one-time GHCR package visibility step required after the first
   container release.
+- The docs no longer say the crypto board is built by JavaScript. tgju now renders it on
+  the server, in a table of its own, so it is still unsupported but for a different reason.
+- The CI live check also fetches the transfer board.
 
 ## [1.0.1] — 2026-08-16
 
@@ -135,6 +140,7 @@ service.
   metrics. There is no database.
 - The crypto board is not supported: tgju builds it with client-side JavaScript.
 
-[Unreleased]: https://github.com/amiranmanesh/tgju-api-go/compare/v1.0.1...HEAD
+[Unreleased]: https://github.com/amiranmanesh/tgju-api-go/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/amiranmanesh/tgju-api-go/compare/v1.0.1...v1.1.0
 [1.0.1]: https://github.com/amiranmanesh/tgju-api-go/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/amiranmanesh/tgju-api-go/releases/tag/v1.0.0

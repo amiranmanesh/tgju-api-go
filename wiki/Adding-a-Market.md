@@ -9,8 +9,8 @@ registration plus a fixture. This is the whole procedure.
 curl -sL -A "Mozilla/5.0" https://www.tgju.org/<page> | grep -c 'market-table'
 ```
 
-Zero means the table is built by JavaScript and this project cannot read it. That is why
-there is no crypto market.
+Zero means the table is built by JavaScript, or uses different markup, and this project
+cannot read it as it stands. That is why there is no crypto market.
 
 ## 2. Register it
 

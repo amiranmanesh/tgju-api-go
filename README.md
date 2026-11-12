@@ -292,9 +292,9 @@ Over the wire:
 | `coin` | سکه | [tgju.org/coin](https://www.tgju.org/coin) |
 | `transfer` | حواله ارزی | [tgju.org/transfer](https://www.tgju.org/transfer) |
 
-The crypto board is built by client-side JavaScript and is deliberately absent: reading it
-would need a headless browser, and a headless browser has no place in a library you import
-to look up an exchange rate.
+The crypto board is not supported yet. tgju now renders it on the server, but in a
+different table (`#stocks-table`, prices in dollars) from the boards above, so it needs its
+own parser rather than a registry entry.
 
 Key catalogue: [Instrument keys](https://github.com/amiranmanesh/tgju-api-go/wiki/Instrument-Keys).
 

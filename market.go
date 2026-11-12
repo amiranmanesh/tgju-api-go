@@ -14,9 +14,10 @@ type Market string
 // The supported markets.
 //
 // Every one of them is rendered by tgju with the same table markup, which is
-// what makes a single scraper enough. Pages built by client side JavaScript —
-// the crypto board, for instance — are deliberately absent: scraping them
-// would need a browser, and a browser has no place in a library.
+// what makes a single scraper enough. Pages that do not use it — the crypto
+// board, which has its own table — are absent until they get a parser of their
+// own, and pages built by client side JavaScript would need a browser, which has
+// no place in a library.
 const (
 	// Currency is the foreign exchange board, https://www.tgju.org/currency.
 	Currency Market = "currency"

@@ -200,3 +200,4 @@ jobs:
           go run ./cmd/tgju get currency --keys price_dollar_rl,price_eur
           go run ./cmd/tgju get gold --keys geram18,silver_925
           go run ./cmd/tgju get coin --keys sekee
+          go run ./cmd/tgju get transfer --keys transfer_usd
